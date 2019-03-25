@@ -1,0 +1,24 @@
+server:
+  port: 8100
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8000/eureka/
+spring:
+  application:
+    name: rabbit-mq
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: fei.zhan
+    password: fei1123
+    cache:
+      connection:
+        mode: CONNECTION
+      channel:
+        size: 10
+        checkout-timeout: 200
+
+
