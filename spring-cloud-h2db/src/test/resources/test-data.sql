@@ -1,0 +1,2 @@
+INSERT INTO `sys_organization` (`name`,`priority`,`parent_id`,`parent_ids`,`available`) VALUES ('测试组1',100,0,'0/',TRUE );
+INSERT INTO `sys_organization` (`name`,`priority`,`parent_id`,`parent_ids`,`available`) VALUES ('测试组1',101,0,'0/',TRUE );

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/jdbc
+            http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+    <!--0. 自动扫描加载管理bean-->
+    <context:component-scan base-package="myself.spring.cloud.h2db.dao"/>
+
+    <!--1. 配置数据源-->
+    <bean id="dataSource" class="org.h2.jdbcx.JdbcConnectionPool"
+          destroy-method="dispose">
+        <constructor-arg>
+            <bean class="org.h2.jdbcx.JdbcDataSource">
+                <!-- 内存模式 MODE=MySql 以mysql的模式运行; DB_CLOSE_DELAY=-1 关闭延时关闭-->
+                <property name="URL" value="jdbc:h2:mem:test;MODE=MySql;DB_CLOSE_DELAY=-1"/>
+                <!-- 文件模式 -->
+                <!-- <property name="URL" value="jdbc:h2:testRestDB" /> -->
+                <property name="user" value="root"/>
+                <property name="password" value="123456"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <!--2. 配置SqlSessionFactory -->
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 指定数据源 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 指定mybatis的配置文件 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>
+
+    <!--3. mybatis自动扫描加载Sql映射文件/接口:MapperScannerConfiguer。
+     basePackage:指定Sql映射文件/接口所在的包（自动扫描）sqlSessionFactory ： -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="myself.spring.cloud.h2db.mapper"/>
+    </bean>
+
+    <!-- JDBC模板 -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="dataSource"/>
+    </bean>
+
+    <!-- 初始化数据库 -->
+    <jdbc:initialize-database data-source="dataSource" ignore-failures="NONE">
+        <!-- 初始化表结构 -->
+        <jdbc:script location="classpath:test-schema.sql"/>
+        <!--改用DbSetup在程序中初始化表数据-->
+        <jdbc:script location="classpath:test-data.sql"/>
+    </jdbc:initialize-database>
+
+
+</beans>
